@@ -251,6 +251,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@prisma/client@npm:^6.4.1":
+  version: 6.4.1
+  resolution: "@prisma/client@npm:6.4.1"
+  peerDependencies:
+    prisma: "*"
+    typescript: ">=5.1.0"
+  peerDependenciesMeta:
+    prisma:
+      optional: true
+    typescript:
+      optional: true
+  checksum: 10c0/fe6c322b473d5ebc3926aafb0a149cb08d9d0df46af71568230fd087e85017f24a7a1e4a09e5817359db494ff7ce7d37ad56459c11c39da98412757acb7f16e9
+  languageName: node
+  linkType: hard
+
 "@prisma/debug@npm:6.4.1":
   version: 6.4.1
   resolution: "@prisma/debug@npm:6.4.1"
@@ -787,6 +802,13 @@ __metadata:
   version: 2.0.3
   resolution: "detect-libc@npm:2.0.3"
   checksum: 10c0/88095bda8f90220c95f162bf92cad70bd0e424913e655c20578600e35b91edc261af27531cf160a331e185c0ced93944bc7e09939143225f56312d7fd800fdb7
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^16.4.7":
+  version: 16.4.7
+  resolution: "dotenv@npm:16.4.7"
+  checksum: 10c0/be9f597e36a8daf834452daa1f4cc30e5375a5968f98f46d89b16b983c567398a330580c88395069a77473943c06b877d1ca25b4afafcdd6d4adb549e8293462
   languageName: node
   linkType: hard
 
@@ -2187,12 +2209,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "social-media-app@workspace:."
   dependencies:
+    "@prisma/client": "npm:^6.4.1"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/cors": "npm:^2.8.17"
     "@types/express": "npm:^5.0.0"
     "@types/jsonwebtoken": "npm:^9.0.9"
     bcrypt: "npm:^5.1.1"
     cors: "npm:^2.8.5"
+    dotenv: "npm:^16.4.7"
     express: "npm:^4.21.2"
     jsonwebtoken: "npm:^9.0.2"
     prisma: "npm:^6.4.1"
