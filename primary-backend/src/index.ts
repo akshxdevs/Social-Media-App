@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
+import { userRouter } from "./routes/user";
+import { PORT } from "./config";
 const app = express()
-const PORT = 3000
 
 app.use(express.json());
 app.use(cors({
@@ -10,6 +11,6 @@ app.use(cors({
     credentials:true
 }))
 
-app.use("",)
+app.use("/api/v1/user",userRouter)
 
-app.listen(PORT,`Server running on port ${PORT}`)
+app.listen(PORT);
