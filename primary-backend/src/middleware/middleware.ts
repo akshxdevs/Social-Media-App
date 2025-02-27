@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
 
 interface AuthRequest extends Request {
-    id?:string
+    userId?:string
 }
 
 export function authenticateJWT (req:AuthRequest,res:Response,next:NextFunction){
@@ -15,7 +15,7 @@ export function authenticateJWT (req:AuthRequest,res:Response,next:NextFunction)
     }
     const payload = jwt.verify(token,JWT_SECRET as string) as {id:string}
     if (payload) {
-        req.id = payload.id;
+        req.userId = payload.id;
         next();
     }else{
         return res.status(403).json({

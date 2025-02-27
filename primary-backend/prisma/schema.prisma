@@ -14,8 +14,60 @@ datasource db {
 }
 
 model User{
+  id            String @id @default(uuid())
+  name          String
+  username      String @unique
+  password      String
+  profilePic    String?
+  bio           String?
+  coverImage    String?
+  post          Post[]
+  likes         Like[]
+  comments      Comment[]
+  savedPost     SavedPost[]   
+  followers     Follower[]    
+}
+
+model Like {
+  id            String @id @default(uuid())
+  postId        String
+  userId        String
+  post          Post @relation(fields: [postId],references: [id])
+  user          User @relation(fields: [userId],references: [id])
+  likedOn       DateTime @default(now())
+}
+
+model Comment {
+  id            String @id @default(uuid())
+  comment       String
+  postId        String
+  userId        String
+  post          Post @relation(fields: [postId],references: [id])
+  user          User @relation(fields: [userId],references: [id])
+  commentOn     DateTime @default(now())
+}
+
+model Follower{
   id String @id @default(uuid())
-  name String
-  username String @unique
-  password String
+  userId String
+  follwerId String
+  user User @relation(fields: [userId],references: [id])
+}
+
+model SavedPost {
+  id String @id @default(uuid())
+  postId String
+  userId String
+  user User @relation(fields: [userId],references: [id])
+}
+
+model Post {
+  id              String @id @default(uuid())
+  userId          String
+  postDescription String
+  postedOn        DateTime @default(now())
+  imageUrl        String
+  user            User @relation(fields: [userId],references: [id])
+  likes           Like[]
+  comments        Comment[]
 }

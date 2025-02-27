@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import { SigninSchema, SignupSchema } from "../types/types";
 import { prismaClient } from "../db/db";
 import { USER_JWT } from "../config";
-import { authenticateJWT } from "../middleware/middleware";
 const router = Router();
 
 router.post("/signup",async(req:Request,res:Response)=>{
@@ -28,7 +27,7 @@ router.post("/signup",async(req:Request,res:Response)=>{
             data:{
                 name:name,
                 username:username,
-                password:HashedPassword
+                password:HashedPassword,
             }
         })
         res.json({
