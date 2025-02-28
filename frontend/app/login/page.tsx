@@ -40,7 +40,7 @@ export default function(){
             }}>Let's Start</button>
             <div className="flex justify-center text-sm font-light ">
                 <p className="py-5 px-1">Don't have an Account?</p>
-                <a href="/login" className="py-5 underline">signup</a>
+                <a href="/signup" className="py-5 underline">signup</a>
             </div>
             </div>
         </div>

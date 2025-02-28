@@ -34,6 +34,23 @@ router.get("/getpost/:id",async(req:Request,res:Response)=>{
     }
 })
 
+router.get("/getallpost",async(req:Request,res:Response)=>{
+    try {
+        const getAllPost = await prismaClient.post.findMany({
+        })
+        if (!getAllPost) {
+            return res.send(404).json({
+                message:"No Post Yet!"
+            })
+        }res.json({
+            getAllPost
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(403).send({message:"Something went wrong!"})  
+    }
+})
+
 router.post("/createpost",authenticateJWT,async(req,res)=>{
     try {
         const parsedBody = PostSchema.safeParse(req.body);
