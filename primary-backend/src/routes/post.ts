@@ -4,7 +4,7 @@ import { CommentSchema, LikeSchema, PostSchema, SavePostSchema } from "../types/
 import { prismaClient } from "../db/db";
 const router = Router();
 
-router.get("/getpost/:id",async(req:Request,res:Response)=>{
+router.get("/getpost/:id",authenticateJWT,async(req:Request,res:Response)=>{
     try {
         const userId = req.params.id
         // const token = req.headers.authorization as string
@@ -34,7 +34,7 @@ router.get("/getpost/:id",async(req:Request,res:Response)=>{
     }
 })
 
-router.get("/getallpost",async(req:Request,res:Response)=>{
+router.get("/getallpost",authenticateJWT,async(req:Request,res:Response)=>{
     try {
         const getAllPost = await prismaClient.post.findMany({
         })
