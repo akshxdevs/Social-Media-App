@@ -63,6 +63,10 @@ router.post("/signin",async(req:Request,res:Response)=>{
             id:user.id
         },USER_JWT as string,{expiresIn:"1h"})
         res.json({
+            user:{
+                name:user.name,
+                id:user.id
+            },
             token,
             message:"User Login Sucessfully"
         })  
