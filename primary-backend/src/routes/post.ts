@@ -55,14 +55,16 @@ router.post("/createpost",authenticateJWT,async(req,res)=>{
     try {
         const parsedBody = PostSchema.safeParse(req.body);
         if (!parsedBody.success) {
+            console.log(parsedBody.error.errors);
             return res.status(400).json({message:"Invalid Input",error:parsedBody.error.errors})
+            
         }
-        const { postDescription,postImgUrl,userId } = parsedBody.data       
+        const { postDescription,postImgUrl,userId} = parsedBody.data       
         const post = await prismaClient.post.create({
             data:{
                 postDescription:postDescription,
                 imageUrl:postImgUrl,
-                userId:userId
+                userId:userId,
             }
         })
         res.json({
