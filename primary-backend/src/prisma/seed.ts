@@ -3,7 +3,45 @@ import { PrismaClient } from "@prisma/client";
 const prismaClient = new PrismaClient();
 
 
-async function main() {
+async function User() {
+    await prismaClient.user.create({
+        data:{
+            name:"akash",
+            username:"akash@gmail.com",
+            password:"123random"
+        }
+    })
+    await prismaClient.user.create({
+        data:{
+            name:"mikeross",
+            username:"mike@gmail.com",
+            password:"123random"
+        }
+    })    
+    await prismaClient.user.create({
+        data:{
+            name:"messi",
+            username:"messi@gmail.com",
+            password:"123random"
+        }
+    })    
+    await prismaClient.user.create({
+        data:{
+            name:"trump",
+            username:"trump@gmail.com",
+            password:"123random"
+        }
+    })    
+    await prismaClient.user.create({
+        data:{
+            name:"harrykane",
+            username:"harry@gmail.com",
+            password:"123random"
+        }
+    })
+}
+
+async function Post() {
     await prismaClient.post.create({
         data:{
             postDescription:"My profession!💪",
@@ -85,4 +123,5 @@ async function main() {
         }
     })
 }
-main()
+User()
+Post()
