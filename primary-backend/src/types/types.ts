@@ -15,6 +15,7 @@ export const PostSchema = z.object({
     postDescription:z.string().min(1).max(30),
     postImgUrl:z.string().min(5),
     userId:z.string(),
+    accountName:z.string(),
 })
 
 export const LikeSchema = z.object({

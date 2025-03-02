@@ -1,1 +1,1 @@
-{"root":["./src/config.ts","./src/index.ts","./src/db/db.ts","./src/middleware/middleware.ts","./src/routes/post.ts","./src/routes/user.ts","./src/types/types.ts"],"version":"5.6.2"}
+{"root":["./src/config.ts","./src/index.ts","./src/db/db.ts","./src/middleware/middleware.ts","./src/prisma/seed.ts","./src/routes/post.ts","./src/routes/user.ts","./src/types/types.ts"],"version":"5.8.2"}

@@ -12,7 +12,6 @@ export default function(){
     const router = useRouter();
 
     return <div className="flex justify-center items-center h-screen">
-        <div className="flex flex-col border border-slate-200 shadow p-50 rounded-xl">
             <div className="flex flex-col border border-slate-100 p-10 rounded-2xl shadow">
             <h1 className="font-semibold text-4xl p-3">Welcome, back 🥳</h1>
             <input type="email" placeholder="Enter your username.." className="py-3 border border-blue-400 rounded-lg my-2 pr-15 pl-3" onChange={(e)=>setUsername(e.target.value)}/>
@@ -43,7 +42,6 @@ export default function(){
                 <a href="/signup" className="py-5 underline">signup</a>
             </div>
             </div>
-        </div>
         <ToastContainer/>
     </div>
 }

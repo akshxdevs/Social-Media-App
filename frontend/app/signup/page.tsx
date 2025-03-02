@@ -12,29 +12,17 @@ export default function(){
     const [password,setPassword] = useState("");
     const router = useRouter();
 
-    return <div className="flex justify-center items-center h-screen">
-        <div className="flex flex-col border border-slate-200 shadow p-50 rounded-xl">
+    return <div className="flex justify-center items-center h-screen ">
             <div className="flex flex-col border border-slate-100 p-10 rounded-2xl shadow">
-            <h1 className="font-semibold text-4xl p-3">Join the vibe! 🎉</h1>
-            <p className=" text-sm p-3">Sign up & let the world see you!</p>
-            <div className="flex flex-row px-5 gap-3">
-                <div className="p-3 border border-blue-400">
-                    <img src="" alt="google" />
-                </div>
-                <div className="p-3 border border-blue-400">
-                    <img src="" alt="github" />
-                </div>                
-                <div className="p-3 border border-blue-400">
-                   <img src="" alt="twitter" />
-                </div>
-            </div>
-                <p className="w-full border-t border-blue-400 my-6"></p>
+                <h1 className="font-semibold text-4xl p-3">Join the vibe! 🎉</h1>
+                <p className=" text-sm p-3">Sign up & let the world see you!</p>
+                <p className="w-full border-t border-blue-400 my-3"></p>
             <div>
             </div>
             <input type="text" placeholder="Enter your name.." className="py-3 border border-blue-400 rounded-lg my-2 pr-15 pl-3" onChange={(e)=>setName(e.target.value)}/>
             <input type="email" placeholder="Enter your username.." className="py-3 border border-blue-400 rounded-lg my-2 pr-15 pl-3" onChange={(e)=>setUsername(e.target.value)}/>
             <input type="password" placeholder="Enter your password.." className="py-3 border border-blue-400 rounded-lg my-2 pr-15 pl-3" onChange={(e)=>setPassword(e.target.value)}/>
-            <button className="border bg-black text-slate-200 font-semibold border-black p-2 rounded-md mt-10" onClick={async()=>{
+            <button className="border bg-black text-slate-200 font-semibold border-black p-2 rounded-md mt-5" onClick={async()=>{
                 try {
                     
                     const res = await axios.post(`${BACKEND_URL}/user/signup`,{
@@ -57,11 +45,10 @@ export default function(){
                     }
             }}>Let's Start</button>
             <div className="flex justify-center text-sm font-light ">
-                <p className="py-5 px-1">Already have an Account?</p>
+                <p className="py-5 px-1 italic text-sm">Already have an Account?</p>
                 <a href="/login" className="py-5 underline">login</a>
             </div>
             </div>
-        </div>
         <ToastContainer/>
     </div>
 }

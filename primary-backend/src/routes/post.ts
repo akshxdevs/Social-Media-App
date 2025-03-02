@@ -34,7 +34,7 @@ router.get("/getpost/:id",authenticateJWT,async(req:Request,res:Response)=>{
     }
 })
 
-router.get("/getallpost",authenticateJWT,async(req:Request,res:Response)=>{
+router.get("/getallpost",async(req:Request,res:Response)=>{
     try {
         const getAllPost = await prismaClient.post.findMany({
         })
@@ -59,12 +59,13 @@ router.post("/createpost",authenticateJWT,async(req,res)=>{
             return res.status(400).json({message:"Invalid Input",error:parsedBody.error.errors})
             
         }
-        const { postDescription,postImgUrl,userId} = parsedBody.data       
+        const { postDescription,postImgUrl,userId,accountName} = parsedBody.data       
         const post = await prismaClient.post.create({
             data:{
                 postDescription:postDescription,
                 imageUrl:postImgUrl,
                 userId:userId,
+                accountName:accountName
             }
         })
         res.json({
@@ -77,7 +78,7 @@ router.post("/createpost",authenticateJWT,async(req,res)=>{
     }
 })
 
-router.post("/like",authenticateJWT,async(req,res)=>{
+router.post("/like",async(req,res)=>{
     try {
         const parsedBody = LikeSchema.safeParse(req.body);
         if (!parsedBody.success) {
@@ -104,6 +105,17 @@ router.post("/like",authenticateJWT,async(req,res)=>{
                 message:"Post Not Found"
             })
         }
+        const userExist = await prismaClient.like.findFirst({
+            where:{
+                userId:userId,
+                postId:postId
+            }
+        });
+        if (userExist) {
+            return res.status(403).json({
+                message:"You already liked the post!!"
+            });
+        }
         await prismaClient.like.create({
             data:{
                 postId:postId,
@@ -118,7 +130,30 @@ router.post("/like",authenticateJWT,async(req,res)=>{
     }
 })
 
-router.post("/comment",authenticateJWT,async(req,res)=>{
+
+
+router.get("/getpostlike/:id",async(req:Request,res:Response)=>{
+    try {
+        const postId = req.params.id;
+        const getPostLike = await prismaClient.like.findMany({
+            where:{
+                postId
+            }
+        })
+        if (!getPostLike) {
+            return res.send(404).json({
+                message:"No Post Yet!"
+            })
+        }res.json({
+            getPostLike
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(403).send({message:"Something went wrong!"})  
+    }
+})
+
+router.post("/comment",async(req,res)=>{
     try {
         const parsedBody = CommentSchema.safeParse(req.body);
         if (!parsedBody.success) {
@@ -157,6 +192,27 @@ router.post("/comment",authenticateJWT,async(req,res)=>{
         })
     } catch (error) {
         
+    }
+})
+
+router.get("/getpostcomment/:id",async(req:Request,res:Response)=>{
+    try {
+        const postId = req.params.id;
+        const getPostComment = await prismaClient.comment.findMany({
+            where:{
+                postId
+            }
+        })
+        if (!getPostComment) {
+            return res.send(404).json({
+                message:"No Post Yet!"
+            })
+        }res.json({
+            getPostComment
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(403).send({message:"Something went wrong!"})  
     }
 })
 
