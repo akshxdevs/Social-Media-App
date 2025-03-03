@@ -18,6 +18,8 @@ export default function(){
     const [showCommentModel,setShowCommentModel] = useState(false);
     const [comment,setComment] = useState<string>();
     const [storePostId,setStorePostId] = useState<string|null>(null);
+    const [showComments,setShowComments] = useState<any[]>([]);
+    const [refresh, setRefresh] = useState(false);
     const router = useRouter();
     const getAllPost = async () => {
         try {
@@ -37,6 +39,20 @@ export default function(){
             console.error("Error fetching posts:", err);
         }
     };
+
+    const getAllComments = async({postId}:{postId:string}) => {
+        try {
+            const res = await axios.get(`${BACKEND_URL}/post/getpostcomment/${postId}`)
+            if (res.data) {
+                const fetchedComments = res.data.getPostComment || [];
+                console.log("Fetched Comments:", fetchedComments); 
+                setShowComments(fetchedComments);
+                return;
+            }
+        } catch (error) {
+           console.error(error);
+        }
+    }
     
     useEffect(()=>{
             setUserId(localStorage.getItem("userId"));
@@ -74,7 +90,9 @@ export default function(){
 
     const getLikes = async({postId}:{postId:string}) => {
         try {
-            const res = await axios.get(`${BACKEND_URL}/post/getpostlike/${postId}`)
+            const res = await axios.get(`${BACKEND_URL}/post/getpostlike/${postId}`);
+            console.log(postId);
+            
             if (res.data) {
                 const likes = res.data.getPostLike;
                 return likes.length
@@ -119,6 +137,9 @@ export default function(){
             })
             if (res.data) {
                 console.log("commented");
+                setComment("");
+                setRefresh(prev => !prev); 
+                getAllComments({postId});
                 getAllPost();
             }
         } catch (error) {
@@ -176,6 +197,7 @@ export default function(){
                                                             <button onClick={()=>{
                                                                 setShowCommentModel(true)
                                                                 setStorePostId(post.id)
+                                                                getAllComments({postId:post.id})
                                                                 }}>
                                                                 <svg
                                                                     xmlns="http://www.w3.org/2000/svg"
@@ -196,29 +218,51 @@ export default function(){
                                                             {showCommentModel && (
                                                                 <div className="fixed inset-0 flex items-center justify-center">
                                                                     <div className="bg-white p-5 rounded-lg shadow-lg w-96">
-                                                                        <div className="flex gap-3 p-2">
-                                                                            <button onClick={()=>setShowCommentModel(false)}> 
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-                                                                                </svg>
-                                                                            </button>
-                                                                            <h1 className="text-lg font-semibold ">Comments</h1>
-                                                                        </div>
-                                                                        <input
-                                                                            type="text"
-                                                                            placeholder="Write a caption..."
-                                                                            className="border p-2 w-full mb-3 rounded"
-                                                                            onChange={(e) => setComment(e.target.value)}
-                                                                        />
-                                                                        <div className="flex justify-center gap-3">
+                                                                    <div className="flex gap-3 p-2">
+                                                                        <button onClick={()=>setShowCommentModel(false)}> 
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-7">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                                                                            </svg>
+                                                                        </button>
+                                                                        <h1 className="text-lg font-semibold pl-20">Comments</h1>
+                                                                    </div>
+                                                                        {showComments.length > 0 ?(
+                                                                            <div>
+                                                                                {showComments.map((comment:any,index:number)=>(
+                                                                                    <div key={index} className="flex-col">
+                                                                                        <div className="">
+                                                                                            <div className="flex-row">
+                                                                                                <h1 className="font-semibold text-md">{comment.userId}:</h1>
+                                                                                                <p>{comment.comment}</p>
+                                                                                            </div>
+                                                                                            <p className="font-light text-sm">{comment.commentOn}</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        ):(
+                                                                            <div className="flex-col text-center p-20 border border-slate-300 rounded-md">
+                                                                                <h1 className="">No Comments Yet</h1>
+                                                                                <p className="">Start the conversation</p>
+                                                                            </div>
+                                                                        )}
+                                                                        <div className="flex justify-center pt-2">
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="Write a caption..."
+                                                                                className="border border-slate-300 rounded-lg p-1 w-full mb-3 "
+                                                                                onChange={(e) => setComment(e.target.value)}
+                                                                            />
                                                                             <button
-                                                                                className="bg-blue-500 text-white px-4 py-2 rounded"
+                                                                                className="pb-2 pl-2"
                                                                                 onClick={()=>{
                                                                                     if (!storePostId) return
                                                                                     handleComment({postId:storePostId})
-                                                                                    setShowCommentModel(false);
+                                                                                    // setShowCommentModel(false);
                                                                                     }}>
-                                                                                Comment
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                                                                                </svg>
                                                                             </button>
                                                                         </div>
                                                                     </div>
