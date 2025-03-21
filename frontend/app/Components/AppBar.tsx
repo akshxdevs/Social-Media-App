@@ -9,8 +9,8 @@ export const AppBar = () => {
     useEffect(()=>{
     const userId = localStorage.getItem("userId");
         if (userId) {
-            setUserId(userId)
-            setIsLogin(true)
+            setUserId(userId);
+            setIsLogin(true);
         }
     },[])
     return <div className="flex border-b justify-between p-4">

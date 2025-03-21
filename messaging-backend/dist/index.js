@@ -17,50 +17,47 @@ const ioredis_1 = __importDefault(require("ioredis"));
 const kafkajs_1 = require("kafkajs");
 const ws_1 = require("ws");
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 5000;
 const redis = new ioredis_1.default();
-const wss = new ws_1.WebSocketServer({ port: 8080 });
-const client = new Map();
-const kafka = new kafkajs_1.Kafka({ clientId: "chat-app", brokers: ["localhost:9093"] });
+const kafka = new kafkajs_1.Kafka({
+    clientId: "chat-app",
+    brokers: ["localhost:9092"]
+});
 const producer = kafka.producer();
 const consumer = kafka.consumer({ groupId: "chat-group" });
-wss.on("connection", (ws, req) => {
-    const userId = req.url ? req.url.split("?")[1] : null;
-    if (!userId)
-        return ws.close();
+const wss = new ws_1.WebSocketServer({ port: 8080 });
+let clients = new Map();
+wss.on("connection", (ws, req) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const userId = (_a = req.url) === null || _a === void 0 ? void 0 : _a.split("?")[1];
+    clients.set(userId, ws);
     console.log(ws);
-    client.set(userId, ws);
     ws.on("message", (message) => __awaiter(void 0, void 0, void 0, function* () {
         const parsedMessage = JSON.parse(message.toString());
         parsedMessage.from = userId;
         yield producer.send({
-            topic: 'chat-messages',
+            topic: "chat-messages",
             messages: [{ value: JSON.stringify(parsedMessage) }]
         });
     }));
-});
+    ws.on("close", () => clients.delete(userId));
+}));
 const runConsumer = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield consumer.connect();
-        yield consumer.subscribe({ topic: "chat-messages" });
-        yield consumer.run({
-            eachMessage: (_a) => __awaiter(void 0, [_a], void 0, function* ({ message }) {
-                if (!message.value)
-                    return;
-                const msg = JSON.parse(message.value.toString());
-                if (client.has(msg.to)) {
-                    client.get(msg.to).send(JSON.stringify(msg));
-                }
-                redis.set(`chat:${msg.from}:${msg.to}`, JSON.stringify(msg));
-            })
-        });
-    }
-    catch (error) {
-        console.error("Kafka Consumer Error!!", error);
-    }
+    yield consumer.connect();
+    yield consumer.subscribe({ topic: "chat-messages" });
+    yield consumer.run({
+        eachMessage: (_a) => __awaiter(void 0, [_a], void 0, function* ({ message }) {
+            if (!message.value)
+                return;
+            const msg = JSON.parse(message.value.toString());
+            if (clients.has(msg.to)) {
+                clients.get(msg.to).send(JSON.stringify(msg));
+            }
+            console.log(msg);
+            redis.set(`chat:${msg.from}:${msg.to}`, JSON.stringify(msg));
+        })
+    });
 });
-app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(`server running on port ${PORT}`);
+app.listen(5000, () => __awaiter(void 0, void 0, void 0, function* () {
     yield producer.connect();
     yield runConsumer();
 }));
