@@ -1,31 +1,56 @@
 import express from "express";
-import cors from "cors";
-import { WebSocketServer, WebSocket } from 'ws';
+import Redis from "ioredis";
+import { Kafka } from "kafkajs";
+import { RawData, WebSocketServer } from "ws";
 const app = express();
+const PORT = process.env.PORT || 5000
+const redis = new Redis();
 
-app.use(express.json());
-app.use(cors());
+const wss = new WebSocketServer({port:8080})
+const client = new Map();
 
-
-const PORT = 8080;
-const server = new WebSocketServer({ port: PORT });
-
-server.on('connection', (ws: WebSocket) => {
-    console.log('New client connected');
+const kafka = new Kafka({clientId:"chat-app",brokers:["localhost:9093"]});
+const producer = kafka.producer();
+const consumer = kafka.consumer({groupId:"chat-group"});
+wss.on("connection",(ws,req)=>{
+    const userId = req.url ? req.url.split("?")[1] : null;
+    if (!userId) return ws.close();
+    console.log(ws);
+    client.set(userId,ws)
     
-    ws.on('message', (message: string) => {
-        console.log(`Received: ${message}`);
-        ws.send(`Server received: ${message}`);
-    });
+    ws.on("message",async(message:RawData)=>{
+        const parsedMessage = JSON.parse(message.toString());
+        parsedMessage.from = userId;
 
-    ws.on('close', () => {
-        console.log('Client disconnected');
+        await producer.send({
+            topic:'chat-messages',
+            messages:[{value:JSON.stringify(parsedMessage)}]
+        })
     });
 });
 
-console.log(`WebSocket server is running on ws://localhost:${PORT}`);
+const runConsumer = async() => {
+    try {
+        await consumer.connect();
+        await consumer.subscribe({topic:"chat-messages"});
+        await consumer.run({
+            eachMessage:async({message})=>{
+                if (!message.value) return
+                const msg = JSON.parse(message.value.toString())
+                if (client.has(msg.to)) {
+                    client.get(msg.to).send(JSON.stringify(msg))
+                }
+                redis.set(`chat:${msg.from}:${msg.to}`,JSON.stringify(msg))
+            }
+        })
+    } catch (error) {
+        console.error("Kafka Consumer Error!!",error);
+        
+    }
+}
 
-
-
-
-app.listen(3000);
+app.listen(PORT,async()=>{
+    console.log(`server running on port ${PORT}`);
+    await producer.connect();
+    await runConsumer();
+})
